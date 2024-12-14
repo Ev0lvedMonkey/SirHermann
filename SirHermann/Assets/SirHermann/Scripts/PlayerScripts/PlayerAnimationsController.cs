@@ -1,21 +1,16 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Animator))]
-public class PlayerAnimationsController : MonoBehaviour
+public class PlayerAnimationsController
 {
-    [SerializeField] private Animator _animator;
-    [SerializeField] private PlayerMovement _playerMovement;
-
     private const string MovementParameter = "CharacterAnimHorizontalInput";
     private const string JumpParameter = "CharacterAnimIsJumping";
     private const string CrouchParameter = "CharacterAnimIsCrouching";
 
-    private void OnValidate()
+    private Animator _animator;
+
+    public PlayerAnimationsController(Animator animator)
     {
-        if(_animator == null)
-            _animator = GetComponent<Animator>();
-        if(_playerMovement == null)
-            _playerMovement = GetComponent<PlayerMovement>();
+        _animator = animator;
     }
 
     public void UpdateAnimationState(float horizontalInput, bool isJumping, bool isCrouching)

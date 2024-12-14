@@ -3,29 +3,42 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider2D))]
 public class PlayerInteractWithTriggers : MonoBehaviour
 {
-    public Scene _selecetScene;
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.TryGetComponent(out DoorsPopUp component))
+        if (collision.TryGetComponent(out DoorsPopUp doorsPopUp))
         {
-            component.ShowText();
-            component.HideFade();
+            doorsPopUp.ShowText();
+            doorsPopUp.HideFade();
+        }
+        if (collision.TryGetComponent(out NPCDialogueCueTrigger dialogueTrigger))
+        {
+            dialogueTrigger.ShowCue();
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.TryGetComponent(out DoorsPopUp component))
-            component.HideText();
+        if (collision.TryGetComponent(out DoorsPopUp doorsPopUp))
+            doorsPopUp.HideText();
+        if (collision.TryGetComponent(out NPCDialogueCueTrigger dialogueTrigger))
+        {
+            dialogueTrigger.HideCue();
+        }
+
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.TryGetComponent(out DoorsPopUp component))
+        if (collision.TryGetComponent(out DoorsPopUp doorsPopUp))
         {
             if (Input.GetKey(KeyCode.E))
-                component.SceneTransition();
+                doorsPopUp.SceneTransition();
         }
+        if (collision.TryGetComponent(out NPCDialogueCueTrigger dialogueTrigger))
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+                dialogueTrigger.EnterDialogue();
+        }
+
     }
 }

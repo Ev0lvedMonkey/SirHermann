@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public enum Scene
+public enum Scenes
 {
     OpenScene = 0,
     HouseScene = 1
@@ -9,23 +9,23 @@ public enum Scene
 
 public static class SceneLoader
 {
-    public static Scene GetActiveScene()
+    public static Scenes GetActiveScene()
     {
         string activeSceneName = SceneManager.GetActiveScene().name;
 
-        if (System.Enum.TryParse(activeSceneName, out Scene activeScene))
+        if (System.Enum.TryParse(activeSceneName, out Scenes activeScene))
         {
             return activeScene;
         }
         else
         {
             Debug.LogWarning($"—цена с именем {activeSceneName} не найдена в перечислении Scene.");
-            return Scene.OpenScene; // ¬озвращаем значение по умолчанию
+            return Scenes.OpenScene; 
         }
     }
 
 
-    public static void Load(Scene targetScene)
+    public static void Load(Scenes targetScene)
     {
         SceneManager.LoadScene(targetScene.ToString());
     }

@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: SceneTransitionData
   m_EditorClassIdentifier: 
   _spawnPositions:
-  - {x: 7, y: -0.18, z: 0}
+  - {x: 26, y: -0.2, z: 0}
   - {x: -8, y: 0, z: 0}

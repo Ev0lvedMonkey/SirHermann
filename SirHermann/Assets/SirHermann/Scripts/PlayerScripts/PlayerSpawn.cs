@@ -1,15 +1,22 @@
 using UnityEngine;
 
-public class PlayerSpawn : MonoBehaviour
+public class PlayerSpawn 
 {
-    [SerializeField] private SceneTransitionData _transitionData;
-
-
     private const string LastPlayerPosition = "LastPlayerPosition";
 
-    void Start()
+    private SceneTransitionData _transitionData;
+    private Transform _transform;
+
+
+    public PlayerSpawn(Transform transform, SceneTransitionData transitionData)
     {
-        if (!PlayerPrefs.HasKey(LastPlayerPosition))
-            transform.position = _transitionData.GetSpawnPosition((int)SceneLoader.GetActiveScene());
+        _transform = transform;
+        _transitionData = transitionData;
+    }
+
+
+    public void Spawn()
+    {
+        _transform.position = _transitionData.GetSpawnPosition((int)SceneLoader.GetActiveScene());
     }
 }

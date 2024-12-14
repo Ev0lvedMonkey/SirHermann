@@ -5,15 +5,15 @@ using UnityEngine.UI;
 
 public class DoorsPopUp : MonoBehaviour
 {
-    [SerializeField] private Scene _selectedScene;
-    [SerializeField] private Collider2D _collider;
-    [SerializeField] private TextMeshProUGUI _text;
-    [SerializeField] private Image _fadeImage;
-
     private const float ANIMATION_DURATION = 0.1f;
     private readonly Vector3 EXPANDED_SCALE_1 = Vector3.one;
     private readonly Vector3 EXPANDED_SCALE_2 = new(28f, 28f, 1f);
     private readonly Vector3 NORMAL_SCALE = Vector3.zero;
+
+    [SerializeField] private Scenes _selectedScene;
+    [SerializeField] private Collider2D _collider;
+    [SerializeField] private TextMeshProUGUI _text;
+    [SerializeField] private Image _fadeImage;
 
     private void Start()
     {
