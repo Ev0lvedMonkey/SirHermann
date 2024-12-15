@@ -1,3 +1,4 @@
+using System.Data.Common;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -30,7 +31,7 @@ public class PlayerMovement : MonoBehaviour, IService
     private void OnValidate()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
-        _animator = GetComponent<Animator>();        
+        _animator = GetComponent<Animator>();
     }
 
     private void Awake()

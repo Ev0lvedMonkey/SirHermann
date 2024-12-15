@@ -1,7 +1,8 @@
+EXTERNAL getPills()
+ 
 -> Start
 ===Start===
 Hermann: Hey, Hermann. What's your business here?
-
 * [Who're you?]  
     -> About_Her
 * [I need pills for my grandfather.]  
@@ -17,6 +18,7 @@ Glory: I'm your grandfather's sister, boy.
 ===Pills===
 Hermann: I need pills for my grandfather. Can you help me?  
 Glory: Sure, take them.  
+~ getPills()
 -> End
 
 ===End===

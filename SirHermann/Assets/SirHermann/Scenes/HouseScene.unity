@@ -2242,6 +2242,25 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!1 &1254992372 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3263462279332855189, guid: 507cc2ba3c7065c49b7754c1919b7600, type: 3}
+  m_PrefabInstance: {fileID: 8795502452211715249}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1254992374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1254992372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b82668b1eee77d48a1891bfc0a8348f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _player: {fileID: 0}
+  _cameraBareerService: {fileID: 0}
 --- !u!1 &1369926861
 GameObject:
   m_ObjectHideFlags: 0
@@ -3592,11 +3611,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6047454080944025198, guid: 40689ba3e151b8c4e805cf584e74e0d4, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -12.484387
+      value: -12.493833
       objectReference: {fileID: 0}
     - target: {fileID: 6047454080944025198, guid: 40689ba3e151b8c4e805cf584e74e0d4, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.40638
+      value: 3.4064
       objectReference: {fileID: 0}
     - target: {fileID: 6047454080944025198, guid: 40689ba3e151b8c4e805cf584e74e0d4, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3691,10 +3710,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7446363884566728332, guid: 507cc2ba3c7065c49b7754c1919b7600, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3263462279332855189, guid: 507cc2ba3c7065c49b7754c1919b7600, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1254992374}
   m_SourcePrefab: {fileID: 100100000, guid: 507cc2ba3c7065c49b7754c1919b7600, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

@@ -1,115 +1,100 @@
 using Ink.Runtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class DialogueManager : MonoBehaviour
+public class DialogueManager : MonoBehaviour, IService
 {
-    [Header("Params")]
-    [SerializeField] private float typingSpeed = 0.4f;
+    private Story _currentStory;
+    private bool _dialogueIsPlaying;
 
     [Header("Dialogue UI")]
-    [SerializeField] private GameObject dialoguePanel;
-    [SerializeField] private TextMeshProUGUI dialogueText;
+    [SerializeField] private GameObject _dialoguePanel;
+    [SerializeField] private TextMeshProUGUI _dialogueText;
 
     [Header("Choices UI")]
-    [SerializeField] private GameObject[] choices;
-    private TextMeshProUGUI[] choicesText;
-
-    private Story currentStory;
-    public bool dialogueIsPlaying { get; private set; }
-
-    private bool canContinueToNextLine = false;
-
-    private Coroutine displayLineCoroutine;
-
-    private static DialogueManager instance;
-
-    private void Awake()
-    {
-        if (instance != null)
-        {
-            Debug.LogWarning("Found more than one Dialogue Manager in the scene");
-        }
-        instance = this;
-    }
-
-    public static DialogueManager GetInstance()
-    {
-        return instance;
-    }
+    [SerializeField] private GameObject[] _buttonsChoices;
+    private TextMeshProUGUI[] _choicesText;
 
     private void Start()
     {
-        dialogueIsPlaying = false;
-        dialoguePanel.SetActive(false);
+        _dialogueIsPlaying = false;
+        _dialoguePanel.SetActive(false);
 
-        choicesText = new TextMeshProUGUI[choices.Length];
-        int index = 0;
-        foreach (GameObject choice in choices)
-        {
-            choicesText[index] = choice.GetComponentInChildren<TextMeshProUGUI>();
-            index++;
-        }
+        InitText();
     }
 
     private void Update()
     {
-        if (!dialogueIsPlaying)
+        if (!_dialogueIsPlaying)
         {
             return;
         }
 
-        // ѕереход к следующей строке, если нет выбора
-        if (canContinueToNextLine && currentStory.currentChoices.Count == 0)
-        {
-            ContinueStory();
-        }
-
-        // ≈сли нажата клавиша Enter, продолжаем вывод следующей строки
-        if (canContinueToNextLine && Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.F))
         {
             ContinueStory();
         }
     }
 
-    public void EnterDialogueMode(TextAsset inkJSON)
+    public void MakeChoice(int choiceIndex)
     {
-        currentStory = new Story(inkJSON.text);
-        dialogueIsPlaying = true;
-        dialoguePanel.SetActive(true);
-
+        _currentStory.ChooseChoiceIndex(choiceIndex);
         ContinueStory();
     }
+
+    public void EnterDialogueMode(TextAsset inkJSON, string nameExternalFucn = null, Action funcBody = null)
+    {
+        BlockPlayerMover();
+        _currentStory = new Story(inkJSON.text);
+        _dialogueIsPlaying = true;
+        _dialoguePanel.SetActive(true);
+
+        if (!string.IsNullOrEmpty(nameExternalFucn) && funcBody != null)
+            _currentStory.BindExternalFunction(nameExternalFucn, () => funcBody?.Invoke());
+        
+        ContinueStory();
+        StartCoroutine(SelectFirstChoice());
+    }
+
+    private void BlockPlayerMover()
+    {
+        ServiceLocator.Current.Get<PlayerMovement>().SetCanCrouch(false);
+        ServiceLocator.Current.Get<PlayerMovement>().SetCanRun(false);
+        ServiceLocator.Current.Get<PlayerMovement>().SetCanJump(false);
+    }
+
+    private void OpenPlayerMover()
+    {
+        ServiceLocator.Current.Get<PlayerMovement>().SetCanCrouch(true);
+        ServiceLocator.Current.Get<PlayerMovement>().SetCanRun(true);
+        ServiceLocator.Current.Get<PlayerMovement>().SetCanJump(true);
+    }
+
+
 
     private IEnumerator ExitDialogueMode()
     {
         yield return new WaitForSeconds(0.2f);
 
-        dialogueIsPlaying = false;
-        dialoguePanel.SetActive(false);
-        dialogueText.text = "";
+        _dialogueIsPlaying = false;
+        _dialoguePanel.SetActive(false);
+        _dialogueText.text = string.Empty;
+        OpenPlayerMover();
     }
 
     private void ContinueStory()
     {
-        if (currentStory.canContinue)
+        if (_currentStory.canContinue)
         {
-            if (displayLineCoroutine != null)
-            {
-                StopCoroutine(displayLineCoroutine);
-            }
-            string nextLine = currentStory.Continue();
-            if (nextLine.Equals("") && !currentStory.canContinue)
-            {
-                StartCoroutine(ExitDialogueMode());
-            }
+            _dialogueText.text = _currentStory.Continue();
+            if (string.IsNullOrWhiteSpace(_dialogueText.text))
+                ContinueStory();
             else
-            {
-                displayLineCoroutine = StartCoroutine(DisplayLine(nextLine));
-            }
+                DisplayChoices();
         }
         else
         {
@@ -117,37 +102,21 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    private IEnumerator DisplayLine(string line)
+    private void InitText()
     {
-        dialogueText.text = line;
-        dialogueText.maxVisibleCharacters = 0;
-        HideChoices();
-
-        canContinueToNextLine = false;
-
-        foreach (char letter in line.ToCharArray())
+        _choicesText = new TextMeshProUGUI[_buttonsChoices.Length];
+        int index = 0;
+        foreach (GameObject choice in _buttonsChoices)
         {
-            dialogueText.maxVisibleCharacters++;
-            yield return new WaitForSeconds(typingSpeed);
-        }
-
-        DisplayChoices();
-        canContinueToNextLine = true;
-    }
-
-    private void HideChoices()
-    {
-        foreach (GameObject choiceButton in choices)
-        {
-            choiceButton.SetActive(false);
+            _choicesText[index] = choice.GetComponentInChildren<TextMeshProUGUI>();
+            index++;
         }
     }
 
     private void DisplayChoices()
     {
-        List<Choice> currentChoices = currentStory.currentChoices;
-
-        if (currentChoices.Count > choices.Length)
+        List<Choice> currentChoices = _currentStory.currentChoices;
+        if (currentChoices.Count > _buttonsChoices.Length)
         {
             Debug.LogError("More choices were given than the UI can support. Number of choices given: "
                 + currentChoices.Count);
@@ -156,31 +125,20 @@ public class DialogueManager : MonoBehaviour
         int index = 0;
         foreach (Choice choice in currentChoices)
         {
-            choices[index].gameObject.SetActive(true);
-            choicesText[index].text = choice.text;
+            _buttonsChoices[index].gameObject.SetActive(true);
+            _choicesText[index].text = choice.text;
             index++;
         }
-        for (int i = index; i < choices.Length; i++)
+        for (int i = index; i < _buttonsChoices.Length; i++)
         {
-            choices[i].gameObject.SetActive(false);
+            _buttonsChoices[i].gameObject.SetActive(false);
         }
-
-        StartCoroutine(SelectFirstChoice());
     }
 
     private IEnumerator SelectFirstChoice()
     {
         EventSystem.current.SetSelectedGameObject(null);
         yield return new WaitForEndOfFrame();
-        EventSystem.current.SetSelectedGameObject(choices[0].gameObject);
-    }
-
-    public void MakeChoice(int choiceIndex)
-    {
-        if (canContinueToNextLine)
-        {
-            currentStory.ChooseChoiceIndex(choiceIndex);
-            ContinueStory();
-        }
+        EventSystem.current.SetSelectedGameObject(_buttonsChoices[0].gameObject);
     }
 }

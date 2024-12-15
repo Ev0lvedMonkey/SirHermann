@@ -1,26 +1,26 @@
 using UnityEngine;
 
-public class Bootstrap : MonoBehaviour
+public abstract class Bootstrap : MonoBehaviour
 {
     private const string ResourcesPath = "Prefabs/";
 
     [SerializeField] private PlayerMovement _player;
     [SerializeField] private CameraBareerService _cameraBareerService;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         SetComponents();
         RegisterServices();
     }
 
-    private void SetComponents()
+    protected virtual void SetComponents()
     {
         GameObject playerObject = Instantiate(Resources.Load<GameObject>(ResourcesPath + "Character"));
         _cameraBareerService = FindFirstObjectByType<CameraBareerService>();
         _player = playerObject.GetComponent<PlayerMovement>();
     }
 
-    private void RegisterServices()
+    protected virtual void RegisterServices()
     {
         ServiceLocator.Inizialize();
         ServiceLocator.Current.Register(_player);
